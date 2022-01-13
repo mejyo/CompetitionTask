@@ -12,9 +12,9 @@ namespace MarsFramework.Global
     class Base
     {
         #region To access Path from resource file
-
+        public static string Url = "http://localhost:5000";
         public static int Browser = Int32.Parse(MarsResource.Browser);
-        public static String ExcelPath = MarsResource.ExcelPath;
+        public static string ExcelPath = MarsResource.ExcelPath;
         public static string ScreenshotPath = MarsResource.ScreenShotPath;
         public static string ReportPath = MarsResource.ReportPath;
         #endregion
@@ -37,15 +37,23 @@ namespace MarsFramework.Global
                     break;
                 case 2:
                     GlobalDefinitions.driver = new ChromeDriver();
+
                     GlobalDefinitions.driver.Manage().Window.Maximize();
                     break;
 
             }
 
+
             #region Initialise Reports
+          
 
             extent = new ExtentReports(ReportPath, false, DisplayOrder.NewestFirst);
             extent.LoadConfig(MarsResource.ReportXMLPath);
+
+   
+            test = extent.StartTest("report");
+
+
 
             #endregion
 
@@ -66,9 +74,9 @@ namespace MarsFramework.Global
         [TearDown]
         public void TearDown()
         {
-            // Screenshot
+            //Screenshot
             String img = SaveScreenShotClass.SaveScreenshot(GlobalDefinitions.driver, "Report");//AddScreenCapture(@"E:\Dropbox\VisualStudio\Projects\Beehive\TestReports\ScreenShots\");
-            test.Log(LogStatus.Info, "Image example: " + img);
+            test.Log(LogStatus.Info, "Image location: " + img);
             // end test. (Reports)
             extent.EndTest(test);
             // calling Flush writes everything to the log file (Reports)

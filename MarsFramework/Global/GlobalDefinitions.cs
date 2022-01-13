@@ -28,8 +28,14 @@ namespace MarsFramework.Global
             return (wait.Until(ExpectedConditions.ElementIsVisible(by)));
         }
         #endregion
-
-
+        public static string BaseUrl
+        {
+            get { return Base.Url; }
+        }
+        public static void NavigateUrl()
+        {
+            driver.Navigate().GoToUrl(BaseUrl);
+        }
         #region Excel 
         public class ExcelLib
         {
