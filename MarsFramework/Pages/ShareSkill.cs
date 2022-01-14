@@ -3,12 +3,17 @@ using NUnit.Framework;
 using OpenDialogWindowHandler;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.PageObjects;
+using OpenQA.Selenium.Support.UI;
+using RelevantCodes.ExtentReports;
+using System;
 using System.Threading;
 
 namespace MarsFramework.Pages
 {
     internal class ShareSkill
     {
+       
+
         public ShareSkill()
         {
             PageFactory.InitElements(Global.GlobalDefinitions.driver, this);
@@ -111,15 +116,42 @@ namespace MarsFramework.Pages
         [FindsBy(How = How.XPath, Using = "//td[normalize-space()='Graphics & Design']")]
         private IWebElement findRecord { get; set; }
 
+        [FindsBy(How = How.XPath, Using = "//a[normalize-space()='Manage Listings']")]
+
+        private IWebElement manageListingsLink { get; set; }
+
+       
+        [FindsBy(How = How.XPath, Using = "//td[normalize-space()='Business']")]
+
+        private IWebElement FindEditedRecord { get; set; }
+
+        //Delete the listing
+        [FindsBy(How = How.XPath, Using = "//tbody/tr[1]/td[8]/div[1]/button[3]")]
+        private IWebElement delete { get; set; }
+
+        [FindsBy(How = How.XPath, Using = "//button[normalize-space()='Yes']")]
+        private IWebElement deleteYesButton { get; set; }
+
+        //Edit the listing
+        [FindsBy(How = How.XPath, Using = "(//i[@class='outline write icon'])[1]")]
+        private IWebElement edit { get; set; }
+
+        [FindsBy(How = How.XPath, Using = "//div[@class='ns-box ns-growl ns-effect-jelly ns-type-success ns-show']")]
+
+        private IWebElement Message { get; set; }
+
+
 
         internal void EnterShareSkill()
         {
             GlobalDefinitions.ExcelLib.PopulateInCollection(Base.ExcelPath, "ShareSkill");
 
-            GlobalDefinitions.wait(3000);
+            var wait = new WebDriverWait(GlobalDefinitions.driver, new TimeSpan(0, 0, 10));
+            wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.LinkText("Share Skill")));
 
             ShareSkillButton.Click();
 
+            Thread.Sleep(3000);
             Title.SendKeys(GlobalDefinitions.ExcelLib.ReadData(2, "Title"));
 
             Description.SendKeys(GlobalDefinitions.ExcelLib.ReadData(2, "Description"));
@@ -159,11 +191,10 @@ namespace MarsFramework.Pages
 
             hodObject.fileOpenDialog(@"C:\Users\mejyo\Desktop\Projects\marsframework\MarsFramework\Data", "Document.txt");
         
-
-
             Active.Click();
            
             Save.Click();
+
             GlobalDefinitions.wait(3000);
             
             if (findRecord.Text == "Graphics & Design")
@@ -179,12 +210,124 @@ namespace MarsFramework.Pages
 
         }
 
-
-    
-
         internal void EditShareSkill()
         {
+            GlobalDefinitions.ExcelLib.PopulateInCollection(Base.ExcelPath, "ShareSkill");
+
+            var wait = new WebDriverWait(GlobalDefinitions.driver, new TimeSpan(0, 0, 10));
+
+            wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.XPath("//a[normalize-space()='Manage Listings']")));
+
+            manageListingsLink.Click();
+
+            Thread.Sleep(3000);
+
+            edit.Click();
+
+            Thread.Sleep(3000);
+            Title.Clear();
+
+            Title.SendKeys(GlobalDefinitions.ExcelLib.ReadData(3, "Title"));
+
+            Description.Clear();
+
+            Description.SendKeys(GlobalDefinitions.ExcelLib.ReadData(3, "Description"));
+
+            CategoryDropDown.SendKeys(GlobalDefinitions.ExcelLib.ReadData(3, "Category"));
+
+            SubCategoryDropDown.SendKeys(GlobalDefinitions.ExcelLib.ReadData(3, "SubCategory"));
+
+            Tags.SendKeys(GlobalDefinitions.ExcelLib.ReadData(3, "Tags"));
+
+            Tags.SendKeys(Keys.Enter);
+
+            HourlyBasisService.Click();
+
+            OnSite.Click();
+
+            StartDateDropDown.SendKeys(GlobalDefinitions.ExcelLib.ReadData(3, "Startdate"));
+
+            EndDateDropDown.SendKeys(GlobalDefinitions.ExcelLib.ReadData(3, "EndDate"));
+
+            Days.Click();
+
+            StartTimeDropDown.SendKeys(GlobalDefinitions.ExcelLib.ReadData(3, "StartTime"));
+
+
+            EndTimeDropDown.SendKeys(GlobalDefinitions.ExcelLib.ReadData(3, "EndTime"));
+
+            Credit.Click();
+
+            CreditAmount.Click();
+
+            CreditAmount.Clear();
+
+            CreditAmount.SendKeys(GlobalDefinitions.ExcelLib.ReadData(3, "Credit"));
+
+            WorkSamples.Click();
+
+            HandleOpenDialog hodObject = new HandleOpenDialog();
+
+            hodObject.fileOpenDialog(@"C:\Users\mejyo\Desktop\Projects\marsframework\MarsFramework\Data", "Document.txt");
+
+            Active.Click();
+
+            Save.Click();
+
+            GlobalDefinitions.wait(3000);
+
+            if (FindEditedRecord.Text == "Business")
+            {
+
+                Assert.Pass("Record has been Updated.");
+            }
+            else
+            {
+
+                Assert.Fail("Record has not been Updated.");
+            }
+
+        }
+
+        internal void Delete()
+        {
+            GlobalDefinitions.wait(30);
+
+            manageListingsLink.Click();
+
+
+            try
+            {
+
+                delete.Click();
+
+                deleteYesButton.Click();
+
+                Thread.Sleep(3000);
+
+                string ExpectedMesaage = "Abc has been deleted";
+
+                string ActualMessage = Message.Text;
+
+                var wait = new WebDriverWait(GlobalDefinitions.driver, new TimeSpan(0, 0, 5));
+
+                wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.XPath("//div[@class='ns-box ns-growl ns-effect-jelly ns-type-success ns-show']")));
+
+
+                Assert.AreEqual(ExpectedMesaage, ActualMessage);
+
+                Assert.Pass("Record has been deleted");
+            }
+
+            catch (NoSuchElementException exp)
+
+            {
+                Base.test.Log(LogStatus.Fail, exp.Message);
+
+                Assert.Pass("Record has not been found");
+            }
 
         }
     }
+
 }

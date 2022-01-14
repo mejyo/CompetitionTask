@@ -2,6 +2,8 @@
 using MarsFramework.Pages;
 using NUnit.Framework;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
+using System;
 
 namespace MarsFramework
 {
@@ -15,40 +17,65 @@ namespace MarsFramework
         {
 
             [Test, Order(1)]
-            public void ShareSkill()
+            public void ShareSkillAdd()
             {
-                GlobalDefinitions.wait(30);
+
+
+                ShareSkill shareSkillObj = new ShareSkill();
+
+                shareSkillObj.EnterShareSkill();
+            }
+            [Test, Order(2)]
+            public void ShareSkillAddOther()
+            {
+
 
                 ShareSkill shareSkillObj = new ShareSkill();
 
                 shareSkillObj.EnterShareSkill();
             }
 
-            [Test, Order(2)]
-            public void ManageListings()
-            {
+            [Test, Order(3)]
+            public void ShareSkillEdit()
+                {
 
-                GlobalDefinitions.wait(30);
+
+                    ShareSkill EditshareSkillObj = new ShareSkill();
+
+                    EditshareSkillObj.EditShareSkill();
+
+            }
+
+
+
+            [Test, Order(4)]
+            public void ManageListingsEdit()
+            {
 
                 ManageListings manageListingsObj = new ManageListings();
 
                 manageListingsObj.Listings();
 
-
-                  
             }
 
 
-            [Test, Order(3)]
+            [Test, Order(5)]
             public void DeleteManageListings()
             {
 
-                GlobalDefinitions.wait(30);
+              ManageListings manageListingsObj = new ManageListings();
 
-                ManageListings manageListingsObj = new ManageListings();
+               manageListingsObj.DeleteListings();
 
-                manageListingsObj.DeleteListings();
 
+            }
+            [Test, Order(6)]
+            public void DeleteShareSkill()
+            {
+
+               ShareSkill DeleteshareSkillObj = new ShareSkill();
+
+               DeleteshareSkillObj.Delete();
 
 
             }

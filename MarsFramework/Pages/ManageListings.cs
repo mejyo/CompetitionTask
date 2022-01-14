@@ -3,6 +3,7 @@ using NUnit.Framework;
 using OpenDialogWindowHandler;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.PageObjects;
+using OpenQA.Selenium.Support.UI;
 using RelevantCodes.ExtentReports;
 using System;
 using System.Reflection;
@@ -12,6 +13,8 @@ namespace MarsFramework.Pages
 {
     internal class ManageListings
     {
+       
+
         public ManageListings()
         {
             PageFactory.InitElements(Global.GlobalDefinitions.driver, this);
@@ -27,7 +30,7 @@ namespace MarsFramework.Pages
         private IWebElement view { get; set; }
 
         //Delete the listing
-        [FindsBy(How = How.XPath, Using = "//body[1]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/table[1]/tbody[1]/tr[1]/td[8]/div[1]/button[3]")]
+        [FindsBy(How = How.XPath, Using = "//tbody/tr[1]/td[8]/div[1]/button[3]")]
         private IWebElement delete { get; set; }
 
         [FindsBy(How = How.XPath, Using = "//button[normalize-space()='Yes']")]
@@ -113,13 +116,12 @@ namespace MarsFramework.Pages
 
         [FindsBy(How = How.XPath, Using = "//td[normalize-space()='Business']")]
 
-        private IWebElement findEditedRecord { get; set; }
+        private IWebElement FindEditedRecord { get; set; }
 
         [FindsBy(How = How.XPath, Using = "//div[@class='ns-box ns-growl ns-effect-jelly ns-type-success ns-show']")]
 
         private IWebElement Message { get; set; }
-
-
+        
         internal void Listings()
         {
 
@@ -127,6 +129,7 @@ namespace MarsFramework.Pages
             GlobalDefinitions.ExcelLib.PopulateInCollection(Base.ExcelPath, "ManageListings");
 
             GlobalDefinitions.wait(3000);
+
             manageListingsLink.Click();
 
             view.Click();
@@ -186,7 +189,7 @@ namespace MarsFramework.Pages
             Save.Click();
             
 
-            if (findEditedRecord.Text == "Business")
+            if (FindEditedRecord.Text == "Business")
             {
 
                 Assert.Pass("Record has been updated");
@@ -201,39 +204,47 @@ namespace MarsFramework.Pages
 
         internal void DeleteListings()
         {
+            GlobalDefinitions.wait(30);
 
             manageListingsLink.Click();
 
-           
-           try
+
+            try 
             {
+                
+                delete.Click();
 
-                if (findEditedRecord.Text == "Business")
-                {
+                deleteYesButton.Click();
 
-                    delete.Click();
-
-                    deleteYesButton.Click();
-                    Thread.Sleep(3000);
-
-                }
-                GlobalDefinitions.wait(30);
+                Thread.Sleep(3000);
+                
                 string ExpectedMesaage = "Abcd has been deleted";
-                string ActualMessage = Message.Text;
-                Assert.AreEqual(ExpectedMesaage, ActualMessage);
 
-            }
-  
-            catch (Exception exp)
-            {
+                string ActualMessage = Message.Text;
+
+                var wait = new WebDriverWait(GlobalDefinitions.driver, new TimeSpan(0, 0, 5));
+
+                wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.XPath("//div[@class='ns-box ns-growl ns-effect-jelly ns-type-success ns-show']")));
+
+
+                Assert.AreEqual(ExpectedMesaage, ActualMessage);
                
+                Assert.Pass("Record has been deleted");
+               
+            }
+
+            catch (NoSuchElementException exp)
+
+            {
                 Base.test.Log(LogStatus.Fail, exp.Message);
 
-
+                Assert.Pass("Record has not been found");
             }
-          
+
         }
-        }
+
+    }
+
     }
 
 
